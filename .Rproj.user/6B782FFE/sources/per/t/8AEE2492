@@ -1,0 +1,26 @@
+{
+    "collab_server" : "",
+    "contents" : "",
+    "created" : 1568573068196.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "2819041886",
+    "id" : "8AEE2492",
+    "lastKnownWriteTime" : 1568630625,
+    "last_content_update" : 1568630625799,
+    "path" : "C:/Users/joris/Desktop/Applied Mathematics/Modelling and Simulation/R/GeneticAlgorithm/Functions.R",
+    "project_path" : "Functions.R",
+    "properties" : {
+        "cursorPosition" : "13,27",
+        "scrollLine" : "0",
+        "tempName" : "Untitled1"
+    },
+    "read_only" : false,
+    "read_only_alternatives" : [
+    ],
+    "relative_order" : 7,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_source"
+}
