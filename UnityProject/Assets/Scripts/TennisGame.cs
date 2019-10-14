@@ -7,6 +7,7 @@ using UnityEngine;
 public class TennisGame : MonoBehaviour
 {
     public GameObject tennisBall;
+    public GameObject tennisBallInstance;
     private List<Dictionary<string,object>> data;
     private int current = 0;
 
@@ -14,7 +15,7 @@ public class TennisGame : MonoBehaviour
     void Start()
     {
         // ReadCSV(@"/Users/dunnkers/git/GeneticAlgorithm/test_data.txt");
-        Instantiate(
+        tennisBallInstance = Instantiate(
             tennisBall, new Vector3(0, 0, 0), Quaternion.identity
         );
 
@@ -34,8 +35,7 @@ public class TennisGame : MonoBehaviour
         float x = Convert.ToSingle(data[current]["V2"]);
         float y = Convert.ToSingle(data[current]["V3"]);
         float z = Convert.ToSingle(data[current]["V4"]);
-        print("stop!");
-        tennisBall.transform.position = new Vector3(x, y, z);
+        tennisBallInstance.transform.position = new Vector3(x, y, z);
         current ++;
     }
 
