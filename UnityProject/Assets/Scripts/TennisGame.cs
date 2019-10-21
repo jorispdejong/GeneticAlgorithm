@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class TennisGame : MonoBehaviour
 {
@@ -10,6 +11,8 @@ public class TennisGame : MonoBehaviour
     public GameObject tennisBallInstance;
     private List<Dictionary<string,object>> data;
     private int current = 0;
+
+    private GUIStyle guiStyle = new GUIStyle();
 
     // Start is called before the first frame update
     void Start()
@@ -24,6 +27,18 @@ public class TennisGame : MonoBehaviour
         print("CSV file read.");
     }
 
+    void OnGUI()
+    {
+        int px = 30;
+        guiStyle.fontSize = px;
+
+        GUI.Label(new Rect(0, px * 0, 100, px), 
+            "FPS: " + (int)(1.0f / Time.smoothDeltaTime), guiStyle);
+
+        GUI.Label(new Rect(0, px * 1, 100, px), 
+            "Generation: x", guiStyle);
+    }
+
     // Update is called once per frame
     void Update()
     {
@@ -32,11 +47,17 @@ public class TennisGame : MonoBehaviour
         }
         
         // transform.position += Vector3.forward * Time.deltaTime;
-        float x = Convert.ToSingle(data[current]["V2"]);
-        float y = Convert.ToSingle(data[current]["V3"]);
-        float z = Convert.ToSingle(data[current]["V4"]);
+        float z = Convert.ToSingle(data[current]["V3"]);
+        float x = Convert.ToSingle(data[current]["V4"]);
+        float y = Convert.ToSingle(data[current]["V5"]);
         tennisBallInstance.transform.position = new Vector3(x, y, z);
-        current ++;
+
+        int fps = (int) (1.0f / Time.smoothDeltaTime);
+        if (fps < 0) {
+            current += 1;
+        } else {
+            current += fps;
+        }
     }
 
     // void ReadCSV(string filepath)
