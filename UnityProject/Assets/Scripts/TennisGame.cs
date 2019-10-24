@@ -8,7 +8,7 @@ using UnityEngine.UI;
 public class TennisGame : MonoBehaviour
 {
     public GameObject tennisBall;
-    public GameObject tennisBallInstance;
+    // public GameObject tennisBallInstance;
     private List<Dictionary<string,object>> data;
     private int current = 0;
 
@@ -17,14 +17,15 @@ public class TennisGame : MonoBehaviour
     private string dataFileName = "test_data";
 
     private CoordsTime coordsTime;
+    private GameObject[] balls;
 
     // Start is called before the first frame update
     void Start()
     {
         // ReadCSV(@"/Users/dunnkers/git/GeneticAlgorithm/test_data.txt");
-        tennisBallInstance = Instantiate(
-            tennisBall, new Vector3(0, 0, 0), Quaternion.identity
-        );
+        // tennisBallInstance = Instantiate(
+        //     tennisBall, new Vector3(0, 0, 0), Quaternion.identity
+        // );
 
         // read in "csv" data
         // data = CSVReader.Read("test_data");
@@ -38,6 +39,18 @@ public class TennisGame : MonoBehaviour
 
         TextAsset data = Resources.Load (dataFileName) as TextAsset;
         coordsTime = JsonUtility.FromJson<CoordsTime>(data.text);
+
+        // instantiate balls
+        int ballCount = coordsTime.coords_time[0].balls.Length;
+        balls = new GameObject[ballCount];
+        for (int i = 0; i < ballCount; i++)
+        {
+            balls[0] = Instantiate(
+                tennisBall, new Vector3(0, 0, 0), Quaternion.identity
+            );
+        }
+
+        print(balls.Length);
         // // Path.Combine combines strings into a file path
         // // Application.StreamingAssets points to Assets/StreamingAssets in the Editor, and the StreamingAssets folder in a build
         // string filePath = Path.Combine(Application.streamingAssetsPath, dataFileName);
@@ -61,6 +74,10 @@ public class TennisGame : MonoBehaviour
 
     void OnGUI()
     {
+        if (current >= coordsTime.coords_time.Length) { // reset when all positions looped.
+            current = 0;
+        }
+        
         int px = 30;
         guiStyle.fontSize = px;
 
@@ -83,10 +100,20 @@ public class TennisGame : MonoBehaviour
         // float z = Convert.ToSingle(data[current]["V3"]);
         // float x = Convert.ToSingle(data[current]["V4"]);
         // float y = Convert.ToSingle(data[current]["V5"]);
-        float z = (float) coordsTime.coords_time[current].balls[0].x;
-        float x = (float) coordsTime.coords_time[current].balls[0].y;
-        float y = (float) coordsTime.coords_time[current].balls[0].z;
-        tennisBallInstance.transform.position = new Vector3(x, y, z);
+        // float z = (float) coordsTime.coords_time[current].balls[0].x;
+        // float x = (float) coordsTime.coords_time[current].balls[0].y;
+        // float y = (float) coordsTime.coords_time[current].balls[0].z;
+        // tennisBallInstance.transform.position = new Vector3(x, y, z);
+
+        CoordTime coordTime = coordsTime.coords_time[current];
+        for (int i = 0; i < coordTime.balls.Length; i++)
+        {
+            ObjectCoords ball = coordTime.balls[i];
+            float z = (float) ball.x;
+            float x = (float) ball.y;
+            float y = (float) ball.z;
+            balls[i].transform.position = new Vector3(x, y, z);
+        }
 
         int fps = (int) (1.0f / Time.smoothDeltaTime);
         if (fps < 0) {
