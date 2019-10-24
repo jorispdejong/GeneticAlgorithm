@@ -14,6 +14,10 @@ public class TennisGame : MonoBehaviour
 
     private GUIStyle guiStyle = new GUIStyle();
 
+    private string dataFileName = "test_data";
+
+    private CoordsTime coordsTime;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -23,9 +27,37 @@ public class TennisGame : MonoBehaviour
         );
 
         // read in "csv" data
-        data = CSVReader.Read("test_data");
-        print("CSV file read.");
+        // data = CSVReader.Read("test_data");
+        // print("CSV file read.");
+
+        LoadData();
     }
+
+    private void LoadData()
+    {
+
+        TextAsset data = Resources.Load (dataFileName) as TextAsset;
+        coordsTime = JsonUtility.FromJson<CoordsTime>(data.text);
+        // // Path.Combine combines strings into a file path
+        // // Application.StreamingAssets points to Assets/StreamingAssets in the Editor, and the StreamingAssets folder in a build
+        // string filePath = Path.Combine(Application.streamingAssetsPath, dataFileName);
+
+        // if(File.Exists(filePath))
+        // {
+        //     // Read the json from the file into a string
+        //     string dataAsJson = File.ReadAllText(filePath);    
+        //     // Pass the json to JsonUtility, and tell it to create a GameData object from it
+        //     GameData loadedData = JsonUtility.FromJson<GameData>(dataAsJson);
+
+        //     // Retrieve the allRoundData property of loadedData
+        //     allRoundData = loadedData.allRoundData;
+        // }
+        // else
+        // {
+        //     Debug.LogError("Cannot load game data!");
+        // }
+    }
+
 
     void OnGUI()
     {
@@ -36,20 +68,24 @@ public class TennisGame : MonoBehaviour
             "FPS: " + (int)(1.0f / Time.smoothDeltaTime), guiStyle);
 
         GUI.Label(new Rect(0, px * 1, 100, px), 
-            "Generation: x", guiStyle);
+            "Generation: " + 
+            coordsTime.coords_time[current].generation, guiStyle);
     }
 
     // Update is called once per frame
     void Update()
     {
-        if (current >= data.Count) { // reset when all positions looped.
+        if (current >= coordsTime.coords_time.Length) { // reset when all positions looped.
             current = 0;
         }
         
         // transform.position += Vector3.forward * Time.deltaTime;
-        float z = Convert.ToSingle(data[current]["V3"]);
-        float x = Convert.ToSingle(data[current]["V4"]);
-        float y = Convert.ToSingle(data[current]["V5"]);
+        // float z = Convert.ToSingle(data[current]["V3"]);
+        // float x = Convert.ToSingle(data[current]["V4"]);
+        // float y = Convert.ToSingle(data[current]["V5"]);
+        float z = (float) coordsTime.coords_time[current].balls[0].x;
+        float x = (float) coordsTime.coords_time[current].balls[0].y;
+        float y = (float) coordsTime.coords_time[current].balls[0].z;
         tennisBallInstance.transform.position = new Vector3(x, y, z);
 
         int fps = (int) (1.0f / Time.smoothDeltaTime);
