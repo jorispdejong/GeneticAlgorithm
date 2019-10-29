@@ -22,7 +22,7 @@ public class TennisGame : MonoBehaviour
 
     private int speed = 2;
 
-    private Boolean enabled = true;
+    private Boolean game_enabled = true;
 
     private const int SIMULATE_TRAINING = 0;
     private const int SIMULATE_MATCH = 1;
@@ -30,21 +30,11 @@ public class TennisGame : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        // ReadCSV(@"/Users/dunnkers/git/GeneticAlgorithm/test_data.txt");
-        // tennisBallInstance = Instantiate(
-        //     tennisBall, new Vector3(0, 0, 0), Quaternion.identity
-        // );
-
-        // read in "csv" data
-        // data = CSVReader.Read("test_data");
-        // print("CSV file read.");
-
         LoadData();
     }
 
     private void LoadData()
     {
-
         TextAsset data = Resources.Load (dataFileName) as TextAsset;
         coordsTime = JsonUtility.FromJson<CoordsTime>(data.text);
 
@@ -59,24 +49,6 @@ public class TennisGame : MonoBehaviour
         }
 
         print(balls.Length);
-        // // Path.Combine combines strings into a file path
-        // // Application.StreamingAssets points to Assets/StreamingAssets in the Editor, and the StreamingAssets folder in a build
-        // string filePath = Path.Combine(Application.streamingAssetsPath, dataFileName);
-
-        // if(File.Exists(filePath))
-        // {
-        //     // Read the json from the file into a string
-        //     string dataAsJson = File.ReadAllText(filePath);    
-        //     // Pass the json to JsonUtility, and tell it to create a GameData object from it
-        //     GameData loadedData = JsonUtility.FromJson<GameData>(dataAsJson);
-
-        //     // Retrieve the allRoundData property of loadedData
-        //     allRoundData = loadedData.allRoundData;
-        // }
-        // else
-        // {
-        //     Debug.LogError("Cannot load game data!");
-        // }
     }
 
 
@@ -108,15 +80,6 @@ public class TennisGame : MonoBehaviour
             current = 0;
         }
         
-        // transform.position += Vector3.forward * Time.deltaTime;
-        // float z = Convert.ToSingle(data[current]["V3"]);
-        // float x = Convert.ToSingle(data[current]["V4"]);
-        // float y = Convert.ToSingle(data[current]["V5"]);
-        // float z = (float) coordsTime.coords_time[current].balls[0].x;
-        // float x = (float) coordsTime.coords_time[current].balls[0].y;
-        // float y = (float) coordsTime.coords_time[current].balls[0].z;
-        // tennisBallInstance.transform.position = new Vector3(x, y, z);
-
         CoordTime coordTime = coordsTime.coords_time[current];
         for (int i = 0; i < coordTime.balls.Length; i++)
         {
@@ -135,30 +98,6 @@ public class TennisGame : MonoBehaviour
             current += speed;
         }
     }
-
-    // void ReadCSV(string filepath)
-    // {
-    //     using(var reader = new StreamReader(filepath))
-    //     {
-    //         List<string> listA = new List<string>();
-    //         List<string> listB = new List<string>();
-    //         bool head = false;
-    //         while (!reader.EndOfStream)
-    //         {
-    //             var line = reader.ReadLine();
-    //             var values = line.Split('\t');
-
-    //             if (!head) {
-    //                 head = true;
-    //                 continue;
-    //             }
-
-    //             listA.Add(values[0]);
-    //             listB.Add(values[1]);
-    //         }
-    //     }
-
-    // }
     public void OnSliderValueChanged(float value)
     {
         Debug.Log("New wind direction: " + value);
@@ -167,7 +106,7 @@ public class TennisGame : MonoBehaviour
 
     public void onClick(Button btn)
     {
-        enabled = !enabled;
+        game_enabled = !game_enabled;
     }
 
     public void DropdownValueChanged(Dropdown change)
