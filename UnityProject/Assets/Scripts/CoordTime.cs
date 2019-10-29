@@ -13,6 +13,8 @@ public class ObjectCoords : System.Object
 [System.Serializable]
 public class CoordTime : System.Object
 {
+    public int point;
+    public int player;
     public float time;
     public int generation;
     public ObjectCoords[] balls;

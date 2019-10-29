@@ -28,7 +28,8 @@ public class TennisGame : MonoBehaviour
     public GameObject tennisBall;
     public GameObject hitSpot;
 
-    private GUIStyle guiStyle = new GUIStyle();
+    private GUIStyle guiStyleTopLeft = new GUIStyle();
+    private GUIStyle guiStyleTopRight = new GUIStyle();
 
     // private string dataFileName = "Game";
 
@@ -39,6 +40,8 @@ public class TennisGame : MonoBehaviour
     // SIMULATION
     private int current = 0;
     private int current_simulation = 0;
+    private const int SIM_TRAIN = 0;
+    private const int SIM_GAME = 1;
 
     // UI-SETTINGS
     private int speed = 2;
@@ -48,8 +51,8 @@ public class TennisGame : MonoBehaviour
     void Start()
     {
         simulations = new Simulation[2];
-        simulations[0] = LoadData("Training_serve_data", "Training");
-        simulations[1] = LoadData("Game", "Game");
+        simulations[SIM_TRAIN] = LoadData("Training_serve_data", "Training");
+        simulations[SIM_GAME] = LoadData("Game", "Game");
     }
 
     private Simulation LoadData(String dataFile, String name)
@@ -87,14 +90,40 @@ public class TennisGame : MonoBehaviour
         }
         
         int px = 30;
-        guiStyle.fontSize = px;
+        guiStyleTopLeft.fontSize = px;
+        guiStyleTopRight.fontSize = px;
 
         GUI.Label(new Rect(0, px * 0, 100, px), 
-            "FPS: " + (int)(1.0f / Time.smoothDeltaTime), guiStyle);
+            "FPS: " + (int)(1.0f / Time.smoothDeltaTime), guiStyleTopLeft);
 
-        GUI.Label(new Rect(0, px * 1, 100, px), 
-            "Generation: " + 
-            sim.coordsTime.coords_time[current].generation, guiStyle);
+        CoordTime coordTime = sim.coordsTime.coords_time[current];
+        int generation = coordTime.generation;
+        if (current_simulation == SIM_TRAIN) {
+            GUI.Label(new Rect(0, px * 1, 100, px), 
+                "Generation: " + 
+                generation, guiStyleTopLeft);
+            GUI.Label(new Rect(0, px * 2, 100, px), 
+                "Player: " + 
+                coordTime.player +
+                " / " + 
+                sim.coordsTime.n_players, guiStyleTopLeft);
+
+            // player scorebord
+            GenerationScore score = sim.coordsTime.scores[generation];
+            for (int i = 0; i < coordTime.player; i++)
+            {
+                int playerScore = score.score_per_player[i];
+                guiStyleTopRight.alignment = TextAnchor.UpperRight;
+                GUI.Label(new Rect(0, px * i, Screen.width - 20, Screen.height), 
+                    "Player " + (i + 1) + " score: " + 
+                    playerScore, guiStyleTopRight);
+            }
+        }
+        if (current_simulation == SIM_GAME) {
+            GUI.Label(new Rect(0, px * 1, 100, px),
+                "Game point: " +
+                coordTime.point, guiStyleTopLeft);
+        }
     }
 
     // Update is called once per frame
