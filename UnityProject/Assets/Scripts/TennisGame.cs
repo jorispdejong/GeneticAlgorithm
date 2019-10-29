@@ -14,10 +14,18 @@ public class TennisGame : MonoBehaviour
 
     private GUIStyle guiStyle = new GUIStyle();
 
-    private string dataFileName = "test_data";
+    // private string dataFileName = "test_data";
+    private string dataFileName = "Game";
 
     private CoordsTime coordsTime;
     private GameObject[] balls;
+
+    private int speed = 2;
+
+    private Boolean enabled = true;
+
+    private const int SIMULATE_TRAINING = 0;
+    private const int SIMULATE_MATCH = 1;
 
     // Start is called before the first frame update
     void Start()
@@ -45,7 +53,7 @@ public class TennisGame : MonoBehaviour
         balls = new GameObject[ballCount];
         for (int i = 0; i < ballCount; i++)
         {
-            balls[0] = Instantiate(
+            balls[i] = Instantiate(
                 tennisBall, new Vector3(0, 0, 0), Quaternion.identity
             );
         }
@@ -92,6 +100,10 @@ public class TennisGame : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        if (!enabled) {
+            return;
+        }
+
         if (current >= coordsTime.coords_time.Length) { // reset when all positions looped.
             current = 0;
         }
@@ -117,9 +129,10 @@ public class TennisGame : MonoBehaviour
 
         int fps = (int) (1.0f / Time.smoothDeltaTime);
         if (fps < 0) {
-            current += 1;
+            current += speed;
         } else {
-            current += fps;
+            // current += fps;
+            current += speed;
         }
     }
 
@@ -146,4 +159,19 @@ public class TennisGame : MonoBehaviour
     //     }
 
     // }
+    public void OnSliderValueChanged(float value)
+    {
+        Debug.Log("New wind direction: " + value);
+        speed = (int) value;
+    }
+
+    public void onClick(Button btn)
+    {
+        enabled = !enabled;
+    }
+
+    public void DropdownValueChanged(Dropdown change)
+    {
+        Debug.Log("dd"+change.value);
+    }
 }
