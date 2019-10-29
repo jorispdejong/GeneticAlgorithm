@@ -1984,7 +1984,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: Stop
+  m_Text: Start
 --- !u!222 &869761018
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -2549,6 +2549,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   tennisBall: {fileID: 5743114191884508797, guid: c2d22d571023046dabd02955b3a3670f,
     type: 3}
+  hitSpot: {fileID: 5557894361241593202, guid: ff6ece4bead7d411c9e341365e3cc043, type: 3}
 --- !u!224 &1329843986
 RectTransform:
   m_ObjectHideFlags: 0

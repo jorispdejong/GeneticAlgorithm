@@ -16,11 +16,17 @@ public class Simulation
     public string name;
     public CoordsTime coordsTime;
     public GameObject[] balls;
+    public float[] prevBallHeights; // used to visualize a bounce.
+
+    public void initialize(CoordsTime coordsTime) {
+        this.coordsTime = coordsTime;
+    }
 }
 
 public class TennisGame : MonoBehaviour
 {
     public GameObject tennisBall;
+    public GameObject hitSpot;
 
     private GUIStyle guiStyle = new GUIStyle();
 
@@ -36,9 +42,7 @@ public class TennisGame : MonoBehaviour
 
     // UI-SETTINGS
     private int speed = 2;
-    private Boolean game_enabled = true;
-    // private const int SIMULATE_TRAINING = 0;
-    // private const int SIMULATE_MATCH = 1;
+    private Boolean game_enabled = false;
 
     // Start is called before the first frame update
     void Start()
@@ -52,17 +56,23 @@ public class TennisGame : MonoBehaviour
     {
         Simulation simulation = new Simulation(dataFile, name);
         TextAsset data = Resources.Load (dataFile) as TextAsset;
-        simulation.coordsTime = JsonUtility.FromJson<CoordsTime>(data.text);
+        CoordsTime coordsTime = JsonUtility.FromJson<CoordsTime>(data.text);
+        simulation.initialize(coordsTime);
 
         // instantiate balls
         int ballCount = simulation.coordsTime.coords_time[0].balls.Length;
         simulation.balls = new GameObject[ballCount];
+        simulation.prevBallHeights = new float[ballCount];
         for (int i = 0; i < ballCount; i++)
         {
             simulation.balls[i] = Instantiate(
                 tennisBall, new Vector3(0, 0, 0), Quaternion.identity
             );
+
+            // instantiate minBallHeights
+            simulation.prevBallHeights[i] = float.MaxValue;
         }
+
 
         print(simulation.balls.Length);
         return simulation;
@@ -107,6 +117,22 @@ public class TennisGame : MonoBehaviour
             float x = (float) ball.y;
             float y = (float) ball.z;
             sim.balls[i].transform.position = new Vector3(x, y, z);
+
+            // falling down
+            if (y < sim.prevBallHeights[i]) {
+                sim.prevBallHeights[i] = y;
+            } else /*y > prev*/ // going up. threshold.
+                if (y < 0.3f && 
+                sim.prevBallHeights[i] != float.MinValue) {
+                // hitspot.
+                Instantiate(
+                    hitSpot, new Vector3(x, 0.03f, z), Quaternion.identity
+                );
+                sim.prevBallHeights[i] = float.MinValue;
+            }
+            if (y >= 0.3f && sim.prevBallHeights[i] == float.MinValue) {
+                sim.prevBallHeights[i] = y;
+            }
         }
 
         int fps = (int) (1.0f / Time.smoothDeltaTime);
@@ -131,6 +157,15 @@ public class TennisGame : MonoBehaviour
 
     public void DropdownValueChanged(Dropdown change)
     {
+        setCurrentBallsActive(false);
         current_simulation = change.value;
+        setCurrentBallsActive(true);
+    }
+
+    private void setCurrentBallsActive(Boolean active) {
+        foreach (var ball in simulations[current_simulation].balls)
+        {
+            ball.SetActive(active);
+        }
     }
 }
