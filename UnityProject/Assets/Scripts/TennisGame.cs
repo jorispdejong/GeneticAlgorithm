@@ -17,6 +17,7 @@ public class Simulation
     public CoordsTime coordsTime;
     public GameObject[] balls;
     public float[] prevBallHeights; // used to visualize a bounce.
+    public int prevGeneration = 0; // for tracking generation change.
 
     public void initialize(CoordsTime coordsTime) {
         this.coordsTime = coordsTime;
@@ -117,6 +118,9 @@ public class TennisGame : MonoBehaviour
                 GUI.Label(new Rect(0, px * i, Screen.width - 20, Screen.height), 
                     "Player " + (i + 1) + " score: " + 
                     playerScore, guiStyleTopRight);
+
+                // COLOR PARENTS AKA HIGHEST SCORES RED.
+                // ....................................
             }
         }
         if (current_simulation == SIM_GAME) {
@@ -163,6 +167,20 @@ public class TennisGame : MonoBehaviour
                 sim.prevBallHeights[i] = y;
             }
         }
+        
+        // did generation change?
+        if (sim.prevGeneration != coordTime.generation && 
+            sim.prevGeneration != 0) {
+            game_enabled = false;
+        }
+        // going to advance a generation.
+        // if ((current + 1) < sim.coordsTime.coords_time.Length && 
+        //     sim.coordsTime.coords_time[current + 1].generation > 
+        //     sim.coordsTime.coords_time[current].generation) {
+        //     game_enabled = false;
+        // }
+        // update generation
+        sim.prevGeneration = coordTime.generation;
 
         int fps = (int) (1.0f / Time.smoothDeltaTime);
         if (fps < 0) {
