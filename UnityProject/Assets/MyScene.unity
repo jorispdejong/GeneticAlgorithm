@@ -360,7 +360,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
   m_AnchoredPosition: {x: 415.8, y: 30.8}
-  m_SizeDelta: {x: 95, y: 30}
+  m_SizeDelta: {x: 64.6, y: 30}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &82130266
 MonoBehaviour:
@@ -1984,7 +1984,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: Start / Stop
+  m_Text: Stop
 --- !u!222 &869761018
 CanvasRenderer:
   m_ObjectHideFlags: 0
