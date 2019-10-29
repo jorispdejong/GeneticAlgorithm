@@ -5,56 +5,74 @@ using System.IO;
 using UnityEngine;
 using UnityEngine.UI;
 
+public class Simulation
+{
+    public Simulation(String dataFile, String name) {
+        this.dataFile = dataFile;
+        this.name = name;
+    }
+
+    public string dataFile;
+    public string name;
+    public CoordsTime coordsTime;
+    public GameObject[] balls;
+}
+
 public class TennisGame : MonoBehaviour
 {
     public GameObject tennisBall;
-    // public GameObject tennisBallInstance;
-    private List<Dictionary<string,object>> data;
-    private int current = 0;
 
     private GUIStyle guiStyle = new GUIStyle();
 
-    // private string dataFileName = "test_data";
-    private string dataFileName = "Game";
+    // private string dataFileName = "Game";
 
-    private CoordsTime coordsTime;
-    private GameObject[] balls;
+    // private CoordsTime coordsTime;
+    // private GameObject[] balls;
+    private Simulation[] simulations;
 
+    // SIMULATION
+    private int current = 0;
+    private int current_simulation = 0;
+
+    // UI-SETTINGS
     private int speed = 2;
-
     private Boolean game_enabled = true;
-
-    private const int SIMULATE_TRAINING = 0;
-    private const int SIMULATE_MATCH = 1;
+    // private const int SIMULATE_TRAINING = 0;
+    // private const int SIMULATE_MATCH = 1;
 
     // Start is called before the first frame update
     void Start()
     {
-        LoadData();
+        simulations = new Simulation[2];
+        simulations[0] = LoadData("Training_serve_data", "Training");
+        simulations[1] = LoadData("Game", "Game");
     }
 
-    private void LoadData()
+    private Simulation LoadData(String dataFile, String name)
     {
-        TextAsset data = Resources.Load (dataFileName) as TextAsset;
-        coordsTime = JsonUtility.FromJson<CoordsTime>(data.text);
+        Simulation simulation = new Simulation(dataFile, name);
+        TextAsset data = Resources.Load (dataFile) as TextAsset;
+        simulation.coordsTime = JsonUtility.FromJson<CoordsTime>(data.text);
 
         // instantiate balls
-        int ballCount = coordsTime.coords_time[0].balls.Length;
-        balls = new GameObject[ballCount];
+        int ballCount = simulation.coordsTime.coords_time[0].balls.Length;
+        simulation.balls = new GameObject[ballCount];
         for (int i = 0; i < ballCount; i++)
         {
-            balls[i] = Instantiate(
+            simulation.balls[i] = Instantiate(
                 tennisBall, new Vector3(0, 0, 0), Quaternion.identity
             );
         }
 
-        print(balls.Length);
+        print(simulation.balls.Length);
+        return simulation;
     }
 
 
     void OnGUI()
     {
-        if (current >= coordsTime.coords_time.Length) { // reset when all positions looped.
+        Simulation sim = simulations[current_simulation];
+        if (current >= sim.coordsTime.coords_time.Length) { // reset when all positions looped.
             current = 0;
         }
         
@@ -66,28 +84,29 @@ public class TennisGame : MonoBehaviour
 
         GUI.Label(new Rect(0, px * 1, 100, px), 
             "Generation: " + 
-            coordsTime.coords_time[current].generation, guiStyle);
+            sim.coordsTime.coords_time[current].generation, guiStyle);
     }
 
     // Update is called once per frame
     void Update()
     {
-        if (!enabled) {
+        if (!game_enabled) {
             return;
         }
 
-        if (current >= coordsTime.coords_time.Length) { // reset when all positions looped.
+        Simulation sim = simulations[current_simulation];
+        if (current >= sim.coordsTime.coords_time.Length) { // reset when all positions looped.
             current = 0;
         }
         
-        CoordTime coordTime = coordsTime.coords_time[current];
+        CoordTime coordTime = sim.coordsTime.coords_time[current];
         for (int i = 0; i < coordTime.balls.Length; i++)
         {
             ObjectCoords ball = coordTime.balls[i];
             float z = (float) ball.x;
             float x = (float) ball.y;
             float y = (float) ball.z;
-            balls[i].transform.position = new Vector3(x, y, z);
+            sim.balls[i].transform.position = new Vector3(x, y, z);
         }
 
         int fps = (int) (1.0f / Time.smoothDeltaTime);
@@ -107,10 +126,11 @@ public class TennisGame : MonoBehaviour
     public void onClick(Button btn)
     {
         game_enabled = !game_enabled;
+        btn.GetComponentInChildren<Text>().text = game_enabled ? "Stop" : "Start";
     }
 
     public void DropdownValueChanged(Dropdown change)
     {
-        Debug.Log("dd"+change.value);
+        current_simulation = change.value;
     }
 }
