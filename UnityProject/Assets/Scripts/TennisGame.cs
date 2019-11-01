@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
 using UnityEngine.UI;
+using System.Linq; 
 
 public class Simulation
 {
@@ -32,10 +33,6 @@ public class TennisGame : MonoBehaviour
     private GUIStyle guiStyleTopLeft = new GUIStyle();
     private GUIStyle guiStyleTopRight = new GUIStyle();
 
-    // private string dataFileName = "Game";
-
-    // private CoordsTime coordsTime;
-    // private GameObject[] balls;
     private Simulation[] simulations;
 
     // SIMULATION
@@ -111,16 +108,28 @@ public class TennisGame : MonoBehaviour
 
             // player scorebord
             GenerationScore score = sim.coordsTime.scores[generation];
+            // parents
+            int[] currentSubset = score.score_per_player
+                .Take(coordTime.player)
+                .ToArray();
+            var sortedIndices = currentSubset
+                    .Select((v, i) => new { Value = v, Index = i })
+                    .OrderByDescending(x => x.Value)
+                    .Select(x => x.Index).ToArray();
+            int[] parents = { sortedIndices[0] };
+            if (sortedIndices.Length > 1) {
+                parents = parents.Append(sortedIndices[1]).ToArray();
+            }
             for (int i = 0; i < coordTime.player; i++)
             {
                 int playerScore = score.score_per_player[i];
                 guiStyleTopRight.alignment = TextAnchor.UpperRight;
+                guiStyleTopRight.normal.textColor = 
+                    Array.IndexOf(parents, i) > -1 ? 
+                    Color.red : Color.black; // Color parents red
                 GUI.Label(new Rect(0, px * i, Screen.width - 20, Screen.height), 
                     "Player " + (i + 1) + " score: " + 
                     playerScore, guiStyleTopRight);
-
-                // COLOR PARENTS AKA HIGHEST SCORES RED.
-                // ....................................
             }
         }
         if (current_simulation == SIM_GAME) {
