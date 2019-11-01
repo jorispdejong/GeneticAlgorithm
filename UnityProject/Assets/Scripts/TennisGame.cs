@@ -178,10 +178,10 @@ public class TennisGame : MonoBehaviour
         }
         
         // did generation change?
-        if (sim.prevGeneration != coordTime.generation && 
-            sim.prevGeneration != 0) {
-            game_enabled = false;
-        }
+        // if (sim.prevGeneration != coordTime.generation && 
+        //     sim.prevGeneration != 0) {
+        //     game_enabled = false;
+        // }
         // going to advance a generation.
         // if ((current + 1) < sim.coordsTime.coords_time.Length && 
         //     sim.coordsTime.coords_time[current + 1].generation > 
